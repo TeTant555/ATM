@@ -1,0 +1,16 @@
+{
+    "common": {
+        "hello": "Hello"
+    },
+    "error-msg": {
+    "invalid-email": "Please enter a valid email address.",
+    "invalid-password": "Password must be at least 2 characters."
+    },
+    "success-msg": {
+        "login-success": "Login successful!"
+    },
+    "error-msg": {
+        "login-fail": "Login failed.",
+        "login-error": "Invalid username or password."
+    }
+}

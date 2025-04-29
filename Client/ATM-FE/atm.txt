@@ -1,0 +1,85 @@
+When user submit Username and Password correctly, 
+the response will look like this 
+{
+  "message": "Login successful.",
+  "status": 0,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJNT0RFTC5FbnRpdGllcy5Vc2VyIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsImp0aSI6ImEyODljNmMyLTgwM2YtNDUyNy1iZGIxLWVkNTE1MDY3NWFhZiIsImV4cCI6MTc0NTQ4NDMxOSwiaXNzIjoiVGhldFRldGFudEF1bmdBVE1BUEkiLCJhdWQiOiJUaGV0VGV0YW50QXVuZ0FUTUNsaWVudCJ9.Hw8qPpdc3SvtOs4ISxvIVFKEuBRxG_swoJKOUR7qvig",
+    "user": {
+      "userID": "f0a0534a-fbed-4a32-b316-9d0f8683ca83",
+      "userName": "admin",
+      "password": "admin123",
+      "wallet": 1100,
+      "isLocked": "N"
+    }
+  }
+}
+
+User and userID
+{
+    "userID": "8534cbf9-eb48-4b86-aa9a-715e0c5dc61c",
+    "userName": "user1",
+    "password": "user123",
+    "wallet": 1520,
+    "isLocked": "Y"
+},
+{
+    "userID": "f0a0534a-fbed-4a32-b316-9d0f8683ca83",
+    "userName": "admin",
+    "password": "admin123",
+    "wallet": 1100,
+    "isLocked": "N"
+},
+{
+    "userID": "ab816327-ac92-40a5-8029-a33af1878b6c",
+    "userName": "user2",
+    "password": "user123",
+    "wallet": 200,
+    "isLocked": "N"
+}
+
+Withdrawl need to submit id and amount
+Here is the Withdrawl response 
+{
+  "message": "Withdrawal successful. New balance: $1000.00",
+  "status": 0,
+  "data": {
+    "userName": "admin",
+    "password": "admin123"
+  }
+}
+
+Deposit need to submit id and amount 
+Here is the Deposit response
+{
+  "message": "Deposit successful. New balance: $1100.00",
+  "status": 0,
+  "data": {
+    "userName": "admin",
+    "password": "admin123"
+  }
+}
+
+CheckBalance need to submit UserId 
+response 
+{
+  "message": "Result Found!",
+  "status": 0,
+  "data": 1520
+}
+
+TransactionByUserID need to submit UserId
+response
+{
+  "message": "Result Found!",
+  "status": 0,
+  "data": [
+    {
+      "transactionID": "3da29af2-72eb-4bfe-6662-08dd817eae6f",
+      "userID": "8534cbf9-eb48-4b86-aa9a-715e0c5dc61c",
+      "amount": 100,
+      "transactionDate": "2025-04-22T15:48:44.857",
+      "transactionType": "Withdraw"
+    }
+    ]
+}
