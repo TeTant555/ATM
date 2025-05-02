@@ -9,6 +9,7 @@ import { ref } from 'vue'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useLoaderStore } from '@/stores/loaderStore'
+import { toast } from 'vue-sonner'
 import api from '@/api'
 
 const username = ref('')
@@ -26,9 +27,19 @@ const { mutate: loginUser } = api.login.addLogin.useMutation({
     localStorage.setItem('userName', data.user.userName)
     localStorage.setItem('password', data.user.password)
     localStorage.setItem('Wallet', data.user.wallet.toString())
+
+    toast('Login successful', {
+      description: `Welcome , ${data.user.userName}`,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          console.log('Undo login')
+        },
+      },
+    }),
     router.push({
       path: '/main',
-      replace: true
+      replace: true,
     })
   },
   onError: (error) => {
@@ -37,26 +48,25 @@ const { mutate: loginUser } = api.login.addLogin.useMutation({
     username.value = ''
     password.value = ''
   },
-  onSettled: stopLoading
+  onSettled: stopLoading,
 })
 
 const onSubmit = async () => {
   try {
-    startLoading();
+    startLoading()
 
     const userData = <AddLoginType>{
-      userName: username.value,   
-      password: password.value
-    };
+      userName: username.value,
+      password: password.value,
+    }
 
-    await loginUser(userData); 
-
+    await loginUser(userData)
   } catch (error) {
-    console.error(error);
+    console.error(error)
   } finally {
-    stopLoading();
+    stopLoading()
   }
-};
+}
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
@@ -139,10 +149,10 @@ const togglePasswordVisibility = () => {
             </div>
           </div>
 
-          <div class="mt-4 text-center text-sm text-pri montserrat font-semibold">
+          <!-- <div class="mt-4 text-center text-sm text-pri montserrat font-semibold">
             Don't have an account?
             <a href="#" class="underline underline-offset-4">Sign up</a>
-          </div>
+          </div> -->
         </form>
       </CardContent>
     </Card>

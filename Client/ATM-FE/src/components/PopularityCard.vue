@@ -2,11 +2,11 @@
 
 <template>
   <!-- From Uiverse.io by MuhammadHasann -->
-  <div class="card">
+  <div class="card shadow-xl">
     <div class="card__border"></div>
     <div class="card_title__container">
-      <span class="card_title">ATM Banking Features</span>
-      <p class="card_paragraph">
+      <span class="card_title montserrat">ATM Banking Features</span>
+      <p class="card_paragraph crimson-pro">
         Manage your money securely and conveniently with our smart ATM services.
       </p>
     </div>
@@ -27,7 +27,7 @@
             ></path>
           </svg>
         </span>
-        <span class="list_text">Cash Withdrawal & Deposit</span>
+        <span class="list_text crimson-pro">Cash Withdrawal & Deposit</span>
       </li>
       <li class="card__list_item">
         <span class="check">
@@ -44,7 +44,7 @@
             ></path>
           </svg>
         </span>
-        <span class="list_text">Balance Inquiry</span>
+        <span class="list_text crimson-pro">Balance Inquiry</span>
       </li>
       <li class="card__list_item">
         <span class="check">
@@ -61,7 +61,7 @@
             ></path>
           </svg>
         </span>
-        <span class="list_text">Mini Statement Printing</span>
+        <span class="list_text crimson-pro">Mini Statement Printing</span>
       </li>
       <li class="card__list_item">
         <span class="check">
@@ -78,7 +78,7 @@
             ></path>
           </svg>
         </span>
-        <span class="list_text">PIN Change & Card Settings</span>
+        <span class="list_text crimson-pro">PIN Change & Card Settings</span>
       </li>
       <li class="card__list_item">
         <span class="check">
@@ -95,9 +95,8 @@
             ></path>
           </svg>
         </span>
-        <span class="list_text">Fund Transfers Between Accounts</span>
+        <span class="list_text crimson-pro">Fund Transfers Between Accounts</span>
       </li>
     </ul>
-    <button class="button">Use ATM Now</button>
   </div>
 </template>
