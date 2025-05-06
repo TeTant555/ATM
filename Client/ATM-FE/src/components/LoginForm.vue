@@ -55,7 +55,7 @@ const { mutate: loginUser } = api.login.addLogin.useMutation({
       },
     }),
     router.push({
-      path: '/main',
+      path: '/',
       replace: true,
     })
   },
@@ -115,7 +115,7 @@ const togglePasswordVisibility = () => {
                 required
                 :class="
                   errorMessage
-                    ? 'bg-red-100 text-txt !border-red-500 !border-2 rounded-lg px-4 py-2 pr-10 ring-0 focus:ring-1 focus-visible:ring-0'
+                    ? 'bg-red-100 text-sw !border-red-500 !border-2 rounded-lg px-4 py-2 pr-10 ring-0 focus:ring-1 focus-visible:ring-0'
                     : 'bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0'
                 "
               />
@@ -128,7 +128,7 @@ const togglePasswordVisibility = () => {
                   v-model="password"
                   :class="
                     errorMessage
-                      ? 'bg-red-100 text-red !border-red-500 !border-2 rounded-lg px-4 py-2 pr-10 ring-0 focus:ring-1 focus-visible:ring-0'
+                      ? 'bg-red-100 text-sw !border-red-500 !border-2 rounded-lg px-4 py-2 pr-10 ring-0 focus:ring-1 focus-visible:ring-0'
                       : 'bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0'
                   "
                   :placeholder="errorMessage ? errorMessage : '*****'"

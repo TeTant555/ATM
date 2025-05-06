@@ -8,7 +8,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      name: '',
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
+    {
       path: '/',
       component: DefaultLayout,
       children: [
@@ -18,19 +22,19 @@ const router = createRouter({
           component: HomeView
         },
         {
-          name: 'login',
-          path: '',
-          component: LoginView
-        },
-        {
           name: 'main',
-          path: '/main',
+          path: '/', // Note: 'main' not '/main' here because it's a child route
           component: MainView
         }
       ]
+    },
+    {
+      path: '/',
+      redirect: '/login'
     }
   ],
 })
+
 
 
 export default router
