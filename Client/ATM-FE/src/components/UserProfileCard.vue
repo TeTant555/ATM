@@ -18,6 +18,10 @@ import { useLoaderStore } from '@/stores/loaderStore'
 import { DollarSign, TrendingUp, TrendingDown, CreditCard } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useQueryClient } from '@tanstack/vue-query'
+import loader2 from '@/stores/loader2.vue'
+
+// Error validation 
+const errorMessage = ref('')
 
 // Separate dialog states
 const isDepositDialogOpen = ref(false)
@@ -52,7 +56,8 @@ watch(
 // Shared form state
 const amount = ref<number | undefined>(undefined)
 const inputPassword = ref('')
-const { startLoading, stopLoading } = useLoaderStore()
+const loaderStore = useLoaderStore()
+const { startLoading, stopLoading, isLoading } = loaderStore
 
 // Withdraw API
 const { mutate: withdraw } = api.withdraw.Withdraw.useMutation({
@@ -84,14 +89,16 @@ const { mutate: withdraw } = api.withdraw.Withdraw.useMutation({
   },
   onError: (error) => {
     console.log('🚀 ~ Withdraw error:', error)
-    alert('An error occurred during withdrawal.')
+    errorMessage.value = 'Username and password are required.'
+    inputPassword.value = ''
   },
   onSettled: stopLoading,
 })
 
 const onWithdraw = async () => {
   if (!inputPassword.value || inputPassword.value !== Password) {
-    alert('Incorrect password')
+    errorMessage.value = 'Enter a valid password'
+    inputPassword.value = ''
     return
   }
   if (!amount.value || amount.value <= 0) {
@@ -140,14 +147,16 @@ const { mutate: Deposit } = api.deposit.Deposit.useMutation({
   },
   onError: (error) => {
     console.log('🚀 ~ Deposit error:', error)
-    alert('An error occurred during deposit.')
+    errorMessage.value = 'Username and password are required.'
+    inputPassword.value = ''
   },
   onSettled: stopLoading,
 })
 
 const onDeposit = async () => {
   if (!inputPassword.value || inputPassword.value !== Password) {
-    alert('Incorrect password')
+    errorMessage.value = 'Enter a valid password'
+    inputPassword.value = ''
     return
   }
   if (!amount.value || amount.value <= 0) {
@@ -168,7 +177,7 @@ const onDeposit = async () => {
 // Income and Outcome
 const Income = ref<number | undefined>(0)
 const Outcome = ref<number | undefined>(0)
-const { data: inout, isLoading, isError } = api.incomeoutcome.InOutById.useQuery(userId)
+const { data: inout, isError } = api.incomeoutcome.InOutById.useQuery(userId)
 console.log('Outcome', inout.value)
 watch(
   () => inout.value,
@@ -181,17 +190,18 @@ watch(
 </script>
 
 <template>
-  <Card class="bg-sw border-pri/10 text-pri shadow-xl shadow-pri/40 h-full flex flex-col">
-    <CardHeader>
+  <!-- <div class="min-w-100"> -->
+  <Card class="bg-sw border-pri/10 text-pri shadow-lg shadow-sha h-full flex flex-col items-center justify-center transition-all duration-500 hover:-translate-y-1 hover:shadow-pri/70">
+    <CardHeader class="w-full ">
       <CardTitle class="text-2xl font-bold text-pri montserrat">My Card</CardTitle>
       <CardDescription class="text-pri/70 text-lg crimson-pro">
         Overview of your ATM account
       </CardDescription>
     </CardHeader>
 
-    <CardContent class="flex flex-col gap-4">
+    <CardContent class="flex flex-col gap-4 w-full">
       <!-- ATM Wallet UI -->
-      <div class="bg-pri text-sec p-6 rounded-2xl shadow-lg shadow-sec flex flex-col gap-2 mt-3">
+      <div class="bg-bgu text-sec p-6 rounded-2xl shadow-lg shadow-sha flex flex-col gap-2 mt-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-pri/70">
         <div class="flex items-center gap-2 text-sm font-semibold montserrat">
           <CreditCard :size="23" /> ATM WALLET
         </div>
@@ -203,51 +213,51 @@ watch(
       </div>
 
       <!-- Balance -->
-      <Card class="bg-gradient-to-b from-sw via-sec to-blue-300 shadow-lg shadow-sec text-pri mt-3">
+      <Card class="bg-gradient-to-l from-blue-100 via-blue-200 to-blue-300 shadow-lg border-none shadow-sha text-blue-950 mt-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-blue-500/70">
         <CardContent class="flex items-center gap-4 p-4">
-          <DollarSign :size="50" class="text-pri" />
+          <DollarSign :size="50" class="text-blue-950" />
           <div>
-            <div class="text-md text-pri/65 montserrat font-semibold">Balance</div>
-            <div class="text-2xl font-bold">$ {{ Wallet }}</div>
+            <div class="text-md text-text-blue-950/65 montserrat font-semibold">Balance</div>
+            <div class="text-2xl font-bold text-blue-950">$ {{ Wallet }}</div>
           </div>
         </CardContent>
       </Card>
 
       <!-- Income & Outcome -->
       <div class="flex flex-col sm:flex-row gap-4">
-        <Card class="flex-1 bg-gradient-to-b from-sw via-green-100 to-green-300 shadow-lg shadow-sec text-pri mt-3">
+        <Card class="border-none flex-1 bg-gradient-to-l from-green-100 via-green-200 to-green-300 shadow-lg shadow-sha mt-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-green-500/70">
         <CardContent class="flex items-center gap-4 p-4">
-          <TrendingUp :size="50" class="text-green-600" />
+          <TrendingUp :size="50" class="text-green-950" />
           <div>
-            <div class="text-md text-green-600/65 montserrat font-semibold">Income (This Month)</div>
-            <div class="text-2xl font-bold text-green-600">$ {{ Income }}</div>
+            <div class="text-md text-green-950/65 montserrat font-semibold">Income (This Month)</div>
+            <div class="text-2xl font-bold text-green-950">$ {{ Income }}</div>
           </div>
         </CardContent>
       </Card>
-        <Card class="flex-1 bg-gradient-to-b from-sw via-red-100 to-red-300 shadow-lg shadow-sec text-pri mt-3">
+        <Card class="border-none flex-1 bg-gradient-to-l from-red-100 via-red-200 to-red-300 shadow-lg shadow-sha mt-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-red-500/70">
           <CardContent class="flex items-center gap-4 p-4">
-            <TrendingDown :size="50" class="text-red-600" />
+            <TrendingDown :size="50" class="text-red-950" />
             <div>
-              <div class="text-md text-red-600/65 montserrat font-semibold">Outcome (This Month)</div>
-              <div class="text-2xl font-bold text-red-600">$ {{ Outcome }}</div>
+              <div class="text-md text-red-950/65 montserrat font-semibold">Outcome (This Month)</div>
+              <div class="text-2xl font-bold text-red-950">$ {{ Outcome }}</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex gap-4 mt-4">
+      <div class="flex gap-4 mt-5">
         <!-- Deposit Dialog -->
         <Dialog v-model:open="isDepositDialogOpen">
           <DialogTrigger as-child>
             <Button
               variant="outline"
-              class="flex-1 crimson-pro text-md bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec"
+              class="border-none mt-2 flex-1 crimson-pro text-md bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec"
             >
               Deposit
             </Button>
           </DialogTrigger>
-          <DialogContent class="sm:max-w-[425px] bg-sw text-pri shadow border border-sec">
+          <DialogContent class="sm:max-w-[425px] bg-sw text-pri shadow border-none border-sec">
             <DialogHeader>
               <DialogTitle class="text-pri montserrat">Deposit</DialogTitle>
               <DialogDescription class="text-pri crimson-pro">Deposit to your wallet.</DialogDescription>
@@ -261,7 +271,7 @@ watch(
                 type="number"
                 required
                 placeholder="Enter amount"
-                class="col-span-3 crimson-pro bg-white text-pri !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 focus-visible:bg-blue-50 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                class="col-span-3 crimson-pro bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 @input="(e : any) => { e.target.value = e.target.value.replace(/[^0-9.]/g, '') }"
               />
               </div>
@@ -272,13 +282,30 @@ watch(
                   id="password"
                   type="password"
                   required
-                  placeholder="Enter Password"
-                  class="col-span-3 crimson-pro bg-white text-pri !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 focus-visible:bg-blue-50"
+                  :placeholder="errorMessage ? errorMessage : 'Enter password'"
+                  :class="
+                  errorMessage
+                  ? 'col-span-3 crimson-pro bg-red-100 text-red !border-red-500 !border-2 rounded-lg px-4 py-2 ring-0 focus:ring-1 focus-visible:ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]'
+                  : 'col-span-3 crimson-pro bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]'"
+                  @input="(e : any) => { e.target.value = e.target.value.replace(/[^0-9.]/g, '') }"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button @click="onDeposit" type="submit" class="montserrat bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec">Save change</Button>
+              <Button 
+              type="submit" 
+              @click="onDeposit" 
+              class="montserrat bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec"
+              :disabled="loaderStore.isLoading">
+              <template v-if="loaderStore.isLoading">
+                <div class="mx-auto scale-45">
+                  <loader2 v-if="true"/>
+                </div>
+              </template>
+              <template v-else>
+                Save change
+              </template>
+            </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -288,12 +315,12 @@ watch(
           <DialogTrigger as-child>
             <Button
               variant="outline"
-              class="flex-1 crimson-pro text-md bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec"
+              class="border-none flex-1 crimson-pro text-md bg-pri text-sec shadow-sha shadow-lg hover:bg-pri/90 hover:text-sec mt-2"
             >
               Withdraw
             </Button>
           </DialogTrigger>
-          <DialogContent class="sm:max-w-[425px] bg-sw text-pri shadow border border-sec">
+          <DialogContent class="sm:max-w-[425px] bg-sw text-pri shadow border-none border-sec">
             <DialogHeader>
               <DialogTitle class="text-pri montserrat">Withdraw</DialogTitle>
               <DialogDescription class="text-pri crimson-pro">Withdraw from your wallet.</DialogDescription>
@@ -307,7 +334,7 @@ watch(
                   type="number"
                   required
                   placeholder="Enter amount"
-                  class="col-span-3 crimson-pro bg-white text-pri !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 focus-visible:bg-blue-50 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  class="col-span-3 crimson-pro bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   @input="(e : any) => { e.target.value = e.target.value.replace(/[^0-9.]/g, '') }"
                 />
               </div>
@@ -318,17 +345,35 @@ watch(
                   id="password"
                   type="password"
                   required
-                  placeholder="Enter Password"
-                  class="col-span-3 crimson-pro bg-white text-pri !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 focus-visible:bg-blue-50"
+                  :placeholder="errorMessage ? errorMessage : 'Enter password'"
+                  :class="
+                  errorMessage
+                  ? 'col-span-3 crimson-pro bg-red-100 text-red !border-red-500 !border-2 rounded-lg px-4 py-2 ring-0 focus:ring-1 focus-visible:ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]'
+                  : 'col-span-3 crimson-pro bg-sw text-txt !border-pri border-2 rounded-lg px-4 py-2 focus-visible:ring-0 ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]'"
+                  @input="(e : any) => { e.target.value = e.target.value.replace(/[^0-9.]/g, '') }"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button @click="onWithdraw" type="submit" class="montserrat bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec">Save change</Button>
+              <Button 
+              type="submit" 
+              @click="onWithdraw" 
+              class="montserrat bg-pri text-sec shadow-lg hover:bg-pri/90 hover:text-sec"
+              :disabled="loaderStore.isLoading">
+              <template v-if="loaderStore.isLoading">
+                <div class="mx-auto scale-45">
+                  <loader2 v-if="true"/>
+                </div>
+              </template>
+              <template v-else>
+                Save change
+              </template>
+            </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
     </CardContent>
   </Card>
+  <!-- </div> -->
 </template>

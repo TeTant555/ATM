@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import loader1 from '@/stores/loader1.vue'
 import api from '@/api'
 
 const userId = localStorage.getItem('userId') || ''
@@ -30,22 +31,21 @@ const formatDate = (date: any) => {
 </script>
 
 <template>
-  <Card class="bg-sw border-pri/10 text-pri shadow-lg shadow-pri/40 w-full max-h-[450px]">
+  <Card class="bg-sw border-pri/10 text-pri shadow-lg shadow-sha w-full max-h-full transition-all duration-500 hover:-translate-y-1 hover:shadow-pri/70">
     <CardHeader class="sticky top-0 z-10 bg-sw">
       <CardTitle class="text-2xl font-bold text-pri montserrat">Transaction History</CardTitle>
-      <CardDescription class="text-pri/70 crimson-pro"
-        >A list of your recent ATM transactions.</CardDescription
-      >
+      <CardDescription class="text-txt/70 crimson-pro">A list of your recent ATM transactions.</CardDescription>
+      <!-- <Table>
+        
+      </Table> -->
     </CardHeader>
 
-    <CardContent class="overflow-y-auto overflow-x-auto max-h-[400px]">
-      <div v-if="isLoading" class="text-center text-pri/70">Loading transactions...</div>
+    <CardContent class="max-h-[450px] overflow-y-auto overflow-x-auto">
+      <div v-if="isLoading" class="text-center text-pri/70 p-3"><loader1 /></div>
       <div v-else-if="isError" class="text-center text-red-500">Failed to load transactions.</div>
 
-      <Table v-else>
-        <TableCaption class="text-pri/60 crimson-pro"
-          >All transactions made through ATM.</TableCaption
-        >
+      <Table v-else class="min-w-full">
+        <TableCaption class="text-pri/60 crimson-pro">All transactions made through ATM.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead class="text-center w-[100px] montserrat text-pri/90 font-semibold">Transaction ID</TableHead>
@@ -60,14 +60,14 @@ const formatDate = (date: any) => {
             :key="transaction.transactionID"
             class="hover:bg-sec/20 transition"
           >
-            <TableCell class="font-semibold montserrat text-xs text-center">{{
+            <TableCell class="font-semibold montserrat text-xs text-txt text-center">{{
               maskTransactionID(transaction.transactionID)
             }}</TableCell>
-            <TableCell class="crimson-pro text-center">{{ transaction.transactionType }}</TableCell>
-            <TableCell class="crimson-pro text-center">{{
+            <TableCell class="crimson-pro text-center text-txt">{{ transaction.transactionType }}</TableCell>
+            <TableCell class="crimson-pro text-center text-txt">{{
               formatDate(transaction.transactionDate)
             }}</TableCell>
-            <TableCell class="crimson-pro text-center">{{ transaction.amount }}</TableCell>
+            <TableCell class="crimson-pro text-center text-txt">{{ transaction.amount }}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

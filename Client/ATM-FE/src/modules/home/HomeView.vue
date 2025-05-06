@@ -3,12 +3,12 @@ import api from '@/api';
 import Button from '@/components/ui/button/Button.vue';
 import { useI18n } from 'vue-i18n';
 
-  const {t, locale} = useI18n();
-  const changeLanguage = (lang: string) => {
-    locale.value = lang;
-  };
+const {t, locale} = useI18n();
+const changeLanguage = (lang: string) => {
+  locale.value = lang;
+};
 
-  const {data,isLoading} = api.products.getProducts.useQuery();
+const {data,isLoading} = api.products.getProducts.useQuery();
 </script>
 
 <template>

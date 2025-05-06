@@ -9,10 +9,10 @@ const props = defineProps<ToasterProps>()
     class="toaster group"
     v-bind="props"
     :style="{
-      '--normal-bg': '#F8F9FA',          // --color-sw
-      '--normal-text': '#00246B',        // --color-pri
-      '--normal-border': '#CADCFC',      // --color-sec
-      '--toast-shadow': '0 4px 12px #CADCFC', // optional: light box-shadow
+      '--normal-bg': '#F8FAFC',           // Tailwind slate-50
+      '--normal-text': '#0F172A',         // Tailwind slate-900
+      '--normal-border': '#E2E8F0',       // Tailwind slate-200
+      '--toast-shadow': '0 4px 12px #CBD5E1', // Tailwind slate-300
     }"
   />
 </template>
