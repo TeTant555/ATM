@@ -26,7 +26,7 @@ import {
 import { useTheme } from '@/assets/theme'
 
 // Light Dark
-const { open, theme, setTheme } = useTheme()
+// const { open, theme, setTheme } = useTheme()
 
 const username = ref('')
 const password = ref('')

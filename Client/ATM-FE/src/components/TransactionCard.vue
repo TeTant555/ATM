@@ -1,4 +1,34 @@
 <script setup lang="ts">
+import type { DropdownMenuCheckboxItemProps } from 'reka-ui'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import type {
+  ColumnFiltersState,
+  ExpandedState,
+  SortingState,
+  VisibilityState,
+} from '@tanstack/vue-table'
+import { Button } from '@/components/ui/button'
+import Checkbox from './ui/checkbox/Checkbox.vue'
+import { Input } from '@/components/ui/input'
+import {
+  createColumnHelper,
+  FlexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table'
+import { ChevronDown, ChevronsUpDown } from 'lucide-vue-next'
+import { h, ref } from 'vue'
 import {
   Table,
   TableBody,
@@ -11,9 +41,62 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import loader1 from '@/stores/loader1.vue'
 import api from '@/api'
+import { computed, watchEffect } from 'vue'
 
+// API
 const userId = localStorage.getItem('userId') || ''
 const { data: transactions, isLoading, isError } = api.transactions.getById.useQuery(userId)
+
+// Table Handling (sorting and filtering)
+const columnHelper = createColumnHelper<any>()
+const columns = [
+  columnHelper.accessor('transactionID', {
+    header: 'Transaction ID',
+    cell: info => h('div', { class: 'text-center font-semibold text-xs text-txt montserrat' }, maskTransactionID(info.getValue())),
+  }),
+  columnHelper.accessor('transactionType', {
+    header: 'Type',
+    cell: info => h('div', { class: 'text-center text-txt crimson-pro' }, info.getValue()),
+  }),
+  columnHelper.accessor('transactionDate', {
+    header: 'Date',
+    cell: info => h('div', { class: 'text-center text-txt crimson-pro' }, formatDate(info.getValue())),
+  }),
+  columnHelper.accessor('amount', {
+    header: 'Amount',
+    cell: info => h('div', { class: 'text-center text-txt crimson-pro' }, info.getValue()),
+  }),
+]
+
+// Table state and instance
+const table = ref()
+// const transactionData = computed(() => transactions.value ?? [])
+const sorting = ref<SortingState>([])
+const columnFilters = ref<ColumnFiltersState>([])
+const columnVisibility = ref<VisibilityState>({})
+const rowSelection = ref({})
+const expanded = ref<ExpandedState>({})
+  watchEffect(() => {
+  table.value = useVueTable({
+    data: transactions.value || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    onSortingChange: updater => (sorting.value = typeof updater === 'function' ? updater(sorting.value) : updater),
+    onColumnFiltersChange: updater => (columnFilters.value = typeof updater === 'function' ? updater(columnFilters.value) : updater),
+    onColumnVisibilityChange: updater => (columnVisibility.value = typeof updater === 'function' ? updater(columnVisibility.value) : updater),
+    state: {
+      get sorting() { return sorting.value },
+      get columnFilters() { return columnFilters.value },
+      get columnVisibility() { return columnVisibility.value },
+      get rowSelection() { return rowSelection.value },
+      get expanded() { return expanded.value },
+    },
+  })
+})
 
 // Hash transaction
 const maskTransactionID = (id: any) => {
@@ -35,39 +118,58 @@ const formatDate = (date: any) => {
     <CardHeader class="sticky top-0 z-10 bg-sw">
       <CardTitle class="text-2xl font-bold text-pri montserrat">Transaction History</CardTitle>
       <CardDescription class="text-txt/70 crimson-pro">A list of your recent ATM transactions.</CardDescription>
-      <!-- <Table>
-        
-      </Table> -->
+      <div class="w-full">
+        <div class="flex items-center py-4">
+          <Input
+            class="max-w-sm"
+            placeholder="Filter by transaction ID..."
+            :model-value="table.getColumn('transactionID')?.getFilterValue() as string"
+            @update:model-value="table.getColumn('transactionID')?.setFilterValue($event)"
+          />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline" class="ml-auto">
+                Columns <ChevronDown class="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuCheckboxItem class="capitalize"> ID </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
     </CardHeader>
 
     <CardContent class="max-h-[450px] overflow-y-auto overflow-x-auto">
       <div v-if="isLoading" class="text-center text-pri/70 p-3"><loader1 /></div>
       <div v-else-if="isError" class="text-center text-red-500">Failed to load transactions.</div>
 
-      <Table v-else class="min-w-full">
-        <TableCaption class="text-pri/60 crimson-pro">All transactions made through ATM.</TableCaption>
+      <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead class="text-center w-[100px] montserrat text-pri/90 font-semibold">Transaction ID</TableHead>
-            <TableHead class="text-center montserrat text-pri/90 font-semibold">Type</TableHead>
-            <TableHead class="text-center montserrat text-pri/90 font-semibold">Date</TableHead>
-            <TableHead class="text-center montserrat text-pri/90 font-semibold">Amount</TableHead>
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+            <TableHead class="text-center" v-for="header in headerGroup.headers" :key="header.id">
+              <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
+            </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          <TableRow
-            v-for="transaction in transactions"
-            :key="transaction.transactionID"
-            class="hover:bg-sec/20 transition"
-          >
-            <TableCell class="font-semibold montserrat text-xs text-txt text-center">{{
-              maskTransactionID(transaction.transactionID)
-            }}</TableCell>
-            <TableCell class="crimson-pro text-center text-txt">{{ transaction.transactionType }}</TableCell>
-            <TableCell class="crimson-pro text-center text-txt">{{
-              formatDate(transaction.transactionDate)
-            }}</TableCell>
-            <TableCell class="crimson-pro text-center text-txt">{{ transaction.amount }}</TableCell>
+          <template v-if="table?.getRowModel().rows.length">
+            <TableRow
+              v-for="row in table?.getRowModel().rows"
+              :key="row.id"
+              class="hover:bg-sec/20 transition"
+            >
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              </TableCell>
+            </TableRow>
+          </template>
+          <TableRow v-else>
+            <TableCell :colspan="columns.length" class="text-center py-4 text-pri/50">
+              No results.
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
