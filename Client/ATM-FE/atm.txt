@@ -83,3 +83,5 @@ response
     }
     ]
 }
+/* "ConnectionString": "Server=192.168.0.184;Initial Catalog=ThetTetantAung-ATM;User ID=thetys;Password=P@ssw0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;"*/
+

@@ -42,6 +42,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import loader1 from '@/stores/loader1.vue'
 import api from '@/api'
 import { computed, watchEffect } from 'vue'
+import type { Column } from '@tanstack/vue-table'
+import { Ellipsis } from 'lucide-vue-next'
 
 // API
 const userId = localStorage.getItem('userId') || ''
@@ -81,7 +83,6 @@ const expanded = ref<ExpandedState>({})
     data: transactions.value || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -129,12 +130,20 @@ const formatDate = (date: any) => {
 
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
-              <Button variant="outline" class="ml-auto">
-                Columns <ChevronDown class="ml-2 h-4 w-4" />
+              <Button variant="outline" class="ml-auto montserrat font-semibold">
+                Filter <ChevronDown class="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuCheckboxItem class="capitalize"> ID </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                v-for="column in table.getAllColumns().filter((col: Column<any, unknown>) => col.getCanHide())"
+                :key="column.id"
+                class="capitalize montserrat font-semibold"
+                :model-value="column.getIsVisible()"
+                @update:model-value="value => column.toggleVisibility(!!value)"
+              >
+                {{ column.id }}
+              </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -146,16 +155,17 @@ const formatDate = (date: any) => {
       <div v-else-if="isError" class="text-center text-red-500">Failed to load transactions.</div>
 
       <Table>
+        <TableCaption class="text-pri/60 crimson-pro">All transactions made through ATM.</TableCaption>
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-            <TableHead class="text-center" v-for="header in headerGroup.headers" :key="header.id">
+            <TableHead class="text-center montserrat text-pri/90 font-semibold" v-for="header in headerGroup.headers" :key="header.id">
               <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
             </TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          <template v-if="table?.getRowModel().rows.length">
+          <template v-if="table?.getRowModel().rows?.length">
             <TableRow
               v-for="row in table?.getRowModel().rows"
               :key="row.id"
@@ -164,6 +174,20 @@ const formatDate = (date: any) => {
               <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
+              <TableCell class="text-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" size="icon">
+                      <Ellipsis class="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuCheckboxItem>View</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>Edit</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>Delete</DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+            </TableCell>
             </TableRow>
           </template>
           <TableRow v-else>
