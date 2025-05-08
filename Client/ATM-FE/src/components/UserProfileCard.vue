@@ -27,12 +27,11 @@ const errorMessage = ref('')
 const isDepositDialogOpen = ref(false)
 const isWithdrawDialogOpen = ref(false)
 
+// User data
 const userId = localStorage.getItem('userId') || ''
 const userName = localStorage.getItem('userName')
 const Password = localStorage.getItem('password')
-// const Wallet = localStorage.getItem('Wallet')
 const queryClient = useQueryClient()
-
 const date = new Date()
 const formattedDate = date.toLocaleDateString('en-US', {
   day: '2-digit',
@@ -41,7 +40,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 })
 
 // Check Balance
-const Wallet = ref<number>(0)
+const Wallet = ref<number | undefined>(0)
 const { data: balance } = api.balance.BalanceById.useQuery(userId)
 watch(
   () => balance.value,
