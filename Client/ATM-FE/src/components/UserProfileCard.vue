@@ -28,9 +28,8 @@ const isDepositDialogOpen = ref(false)
 const isWithdrawDialogOpen = ref(false)
 
 // User data
-const userId = localStorage.getItem('userId') || ''
-const userName = localStorage.getItem('userName')
-const Password = localStorage.getItem('password')
+const userdata = api.getUserDataFromToken();
+console.log("pkk",userdata)
 const queryClient = useQueryClient()
 const date = new Date()
 const formattedDate = date.toLocaleDateString('en-US', {
@@ -41,7 +40,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 
 // Check Balance
 const Wallet = ref<number | undefined>(0)
-const { data: balance } = api.balance.BalanceById.useQuery(userId)
+const { data: balance } = api.balance.BalanceById.useQuery(userdata?.userId || "")
 watch(
   () => balance.value,
   (newVal) => {
@@ -74,15 +73,15 @@ const { mutate: withdraw } = api.withdraw.Withdraw.useMutation({
       (isWithdrawDialogOpen.value = false)
     console.log('✅ Withdraw Response:', data)
     queryClient.invalidateQueries(
-      { queryKey: ['balancetype', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['balancetype', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
     queryClient.invalidateQueries(
-      { queryKey: ['transactions', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['transactions', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
     queryClient.invalidateQueries(
-      { queryKey: ['incomeoutcome', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['incomeoutcome', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
   },
@@ -93,9 +92,8 @@ const { mutate: withdraw } = api.withdraw.Withdraw.useMutation({
   },
   onSettled: stopLoading,
 })
-
 const onWithdraw = async () => {
-  if (!inputPassword.value || inputPassword.value !== Password) {
+  if (!inputPassword.value || inputPassword.value !== userdata?.userPassword) {
     errorMessage.value = 'Enter a valid password'
     inputPassword.value = ''
     return
@@ -104,13 +102,12 @@ const onWithdraw = async () => {
     alert('Enter a valid amount')
     return
   }
-  if (!userId) {
+  if (!userdata?.userId) {
     alert('User ID not found in localStorage.')
     return
   }
-
   withdraw({
-    id: userId,
+    id: userdata?.userId,
     amount: amount.value,
   })
 }
@@ -132,15 +129,15 @@ const { mutate: Deposit } = api.deposit.Deposit.useMutation({
       (isDepositDialogOpen.value = false)
     console.log('✅ Deposit Response:', data)
     queryClient.invalidateQueries(
-      { queryKey: ['balancetype', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['balancetype', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
     queryClient.invalidateQueries(
-      { queryKey: ['transactions', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['transactions', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
     queryClient.invalidateQueries(
-      { queryKey: ['incomeoutcome', userId], exact: false, refetchType: 'active' },
+      { queryKey: ['incomeoutcome', userdata?.userId], exact: false, refetchType: 'active' },
       { throwOnError: false, cancelRefetch: false },
     )
   },
@@ -153,7 +150,7 @@ const { mutate: Deposit } = api.deposit.Deposit.useMutation({
 })
 
 const onDeposit = async () => {
-  if (!inputPassword.value || inputPassword.value !== Password) {
+  if (!inputPassword.value || inputPassword.value !== userdata?.userPassword) {
     errorMessage.value = 'Enter a valid password'
     inputPassword.value = ''
     return
@@ -162,13 +159,12 @@ const onDeposit = async () => {
     alert('Enter a valid amount')
     return
   }
-  if (!userId) {
+  if (!userdata?.userId) {
     alert('User ID not found in localStorage.')
     return
   }
-
   Deposit({
-    id: userId,
+    id: userdata?.userId,
     amount: amount.value,
   })
 }
@@ -176,7 +172,7 @@ const onDeposit = async () => {
 // Income and Outcome
 const Income = ref<number | undefined>(0)
 const Outcome = ref<number | undefined>(0)
-const { data: inout, isError } = api.incomeoutcome.InOutById.useQuery(userId)
+const { data: inout, isError } = api.incomeoutcome.InOutById.useQuery(userdata?.userId ||"")
 console.log('Outcome', inout.value)
 watch(
   () => inout.value,
@@ -204,9 +200,9 @@ watch(
         <div class="flex items-center gap-2 text-sm font-semibold montserrat">
           <CreditCard :size="23" /> ATM WALLET
         </div>
-        <div class="text-lg font-semibold tracking-widest montserrat">{{ userName }}</div>
+        <div class="text-lg font-semibold tracking-widest montserrat">{{ userdata?.userName }}</div>
         <div class="mt-4 flex justify-between items-center text-sm crimson-pro">
-          <span>{{ userId }}</span>
+          <span>{{ userdata?.userId }}</span>
           <span>{{ formattedDate }}</span>
         </div>
       </div>

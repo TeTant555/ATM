@@ -46,8 +46,8 @@ import type { Column } from '@tanstack/vue-table'
 import { Ellipsis } from 'lucide-vue-next'
 
 // API
-const userId = localStorage.getItem('userId') || ''
-const { data: transactions, isLoading, isError } = api.transactions.getById.useQuery(userId)
+const user = api.getUserDataFromToken();
+const { data: transactions, isLoading, isError } = api.transactions.getById.useQuery(user?.userId||"")
 
 // Table Handling (sorting and filtering)
 const columnHelper = createColumnHelper<any>()
@@ -72,7 +72,6 @@ const columns = [
 
 // Table state and instance
 const table = ref()
-// const transactionData = computed(() => transactions.value ?? [])
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})

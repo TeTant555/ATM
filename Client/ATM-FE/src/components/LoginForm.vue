@@ -28,6 +28,7 @@ import { useTheme } from '@/assets/theme'
 // Light Dark
 // const { open, theme, setTheme } = useTheme()
 
+// State
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
@@ -35,18 +36,19 @@ const router = useRouter()
 const loaderStore = useLoaderStore()
 const { startLoading, stopLoading, isLoading } = loaderStore
 
+// API Call
 const { mutate: loginUser } = api.login.addLogin.useMutation({
   onMutate: startLoading,
   onSuccess: (data) => {
     console.log(data)
     localStorage.setItem('template-app-token', data.token)
     localStorage.setItem('userId', data.user.userID)
-    localStorage.setItem('userName', data.user.userName)
-    localStorage.setItem('password', data.user.password)
-    localStorage.setItem('Wallet', data.user.wallet.toString())
+    // localStorage.setItem('userName', data.user.userName)
+    // localStorage.setItem('password', data.user.password)
+    // localStorage.setItem('Wallet', data.user.wallet.toString())
 
     toast('Login successful', {
-      description: `Welcome , ${data.user.userName}`,
+      description: `Welcome , ${data}`,
       action: {
         label: 'Undo',
         onClick: () => {
@@ -68,6 +70,7 @@ const { mutate: loginUser } = api.login.addLogin.useMutation({
   onSettled: stopLoading,
 })
 
+// Form Handle
 const onSubmit = async () => {
   try {
     const userData = <AddLoginType>{
